@@ -1,0 +1,22 @@
+# iOS build via Codemagic (free tier: 500 min/month on Mac machines).
+# 1. Sign up at codemagic.io with your GitHub account
+# 2. Add this repo → it detects this file automatically
+# 3. For a real iPhone install you need an Apple Developer account ($99/yr)
+#    and code-signing set up in Codemagic → Team settings.
+#    Until then, this builds an UNSIGNED .ipa to prove the pipeline works.
+workflows:
+  ios-build:
+    name: Knot iOS
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Scaffold platforms
+        script: flutter create --org com.flovex --project-name knot --platforms ios,android .
+      - name: Get packages
+        script: flutter pub get
+      - name: Build unsigned iOS
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/*.app

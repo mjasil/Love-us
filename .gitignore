@@ -1,5 +1,5 @@
 build/
 .dart_tool/
-android/
-ios/
+/android/
+/ios/
 *.iml

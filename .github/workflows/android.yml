@@ -29,11 +29,19 @@ jobs:
 
       - name: Pin minSdkVersion to 21 (required by home_widget/image_picker)
         run: |
-          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
-          grep -i sdkversion android/app/build.gradle
+          if [ -f android/app/build.gradle.kts ]; then
+            sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 21/' android/app/build.gradle.kts
+            grep -i minsdk android/app/build.gradle.kts || true
+          elif [ -f android/app/build.gradle ]; then
+            sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
+            grep -i sdkversion android/app/build.gradle || true
+          else
+            echo "No build.gradle(.kts) found — skipping, default minSdk should be fine"
+          fi
 
       - name: Build APK
         run: |
+          set -o pipefail
           flutter pub get
           flutter build apk --release --verbose 2>&1 | tee build_log.txt
 

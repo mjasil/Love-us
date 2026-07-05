@@ -14,8 +14,52 @@ final supa = Supabase.instance.client;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-  runApp(const KnotApp());
+  // Catch anything that would otherwise crash the app before a single
+  // widget renders, and show it on-screen instead of bouncing to home.
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+  };
+  String? initError;
+  try {
+    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+  } catch (e) {
+    initError = e.toString();
+  }
+  runApp(initError == null ? const KnotApp() : CrashScreen(error: initError));
+}
+
+/// Shown instead of crashing when startup fails, so we can see why.
+class CrashScreen extends StatelessWidget {
+  final String error;
+  const CrashScreen({super.key, required this.error});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: const Color(0xFF1C1418),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Couldn\'t start Knot',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Text(error,
+                    style: const TextStyle(color: Colors.white70, fontSize: 13)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class KnotApp extends StatelessWidget {
@@ -53,6 +97,20 @@ class Gate extends StatelessWidget {
             if (coupleSnap.connectionState != ConnectionState.done) {
               return const Scaffold(
                   body: Center(child: CircularProgressIndicator()));
+            }
+            if (coupleSnap.hasError) {
+              return Scaffold(
+                body: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      'Something went wrong loading your space:\n${coupleSnap.error}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ),
+              );
             }
             final couple = coupleSnap.data;
             if (couple == null || couple['user_b'] == null) {

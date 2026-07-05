@@ -6,8 +6,8 @@ import 'screens/pairing_screen.dart';
 import 'screens/shell.dart';
 
 // ── EDIT THESE TWO LINES AFTER CREATING YOUR SUPABASE PROJECT ──
-const supabaseUrl = 'https://YOUR-PROJECT.supabase.co';
-const supabaseAnonKey = 'YOUR-ANON-KEY';
+const supabaseUrl = 'https://kvkoncdduueryfvtrhxd.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2a29uY2RkdXVlcnlmdnRyaHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMDY5ODIsImV4cCI6MjA5ODc4Mjk4Mn0.AOdvv3GvU03OJMZcgpqgEWTqJiKdhXYnA6lVUgNuiec';
 // ────────────────────────────────────────────────────────────────
 
 final supa = Supabase.instance.client;
